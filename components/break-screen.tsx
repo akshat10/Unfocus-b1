@@ -5,58 +5,52 @@ import { useUnfocus, type BreakType } from '@/lib/unfocus-context'
 
 const breakAsciiArt: Record<BreakType, string> = {
   eyes: `
-    .-"""-.
-   /        \\
-  |  O    O  |
-  |    __    |
-   \\  \\__/  /
-    '-.  .-'
-       ""
+███████╗██╗   ██╗███████╗███████╗
+██╔════╝╚██╗ ██╔╝██╔════╝██╔════╝
+█████╗   ╚████╔╝ █████╗  ███████╗
+██╔══╝    ╚██╔╝  ██╔══╝  ╚════██║
+███████╗   ██║   ███████╗███████║
+╚══════╝   ╚═╝   ╚══════╝╚══════╝
 `,
   breath: `
-       .
-      /|\\
-     / | \\
-    /  |  \\
-   /   |   \\
-  /____|____\\
-       |
-      ~~~
+██████╗ ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗
+██╔══██╗██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║  ██║
+██████╔╝██████╔╝█████╗  ███████║   ██║   ███████║
+██╔══██╗██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══██║
+██████╔╝██║  ██║███████╗██║  ██║   ██║   ██║  ██║
+╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 `,
   posture: `
-      O
-     /|\\
-    / | \\
-      |
-     / \\
-    /   \\
+██████╗  ██████╗ ███████╗████████╗██╗   ██╗██████╗ ███████╗
+██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔════╝
+██████╔╝██║   ██║███████╗   ██║   ██║   ██║██████╔╝█████╗
+██╔═══╝ ██║   ██║╚════██║   ██║   ██║   ██║██╔══██╗██╔══╝
+██║     ╚██████╔╝███████║   ██║   ╚██████╔╝██║  ██║███████╗
+╚═╝      ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝
 `,
   hands: `
-      _____
-     /     \\
-    | | | | |
-    | | | | |
-     \\|_|_|/
-      \\   /
-       \\_/
+██╗  ██╗ █████╗ ███╗   ██╗██████╗ ███████╗
+██║  ██║██╔══██╗████╗  ██║██╔══██╗██╔════╝
+███████║███████║██╔██╗ ██║██║  ██║███████╗
+██╔══██║██╔══██║██║╚██╗██║██║  ██║╚════██║
+██║  ██║██║  ██║██║ ╚████║██████╔╝███████║
+╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝
 `,
   hydration: `
-     _____
-    |     |
-    |~~~~~|
-    |     |
-    |     |
-    |_____|
-     \\   /
-      \\_/
+██╗  ██╗██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
+██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
+███████║ ╚████╔╝ ██║  ██║██████╔╝███████║   ██║   █████╗
+██╔══██║  ╚██╔╝  ██║  ██║██╔══██╗██╔══██║   ██║   ██╔══╝
+██║  ██║   ██║   ██████╔╝██║  ██║██║  ██║   ██║   ███████╗
+╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
 `,
   window: `
-   +---------+
-   |  .  *   |
-   |    *  . |
-   | .    *  |
-   |   *   . |
-   +---------+
+██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗
+██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║
+██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║
+██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║
+╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝
+ ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝
 `,
 }
 
@@ -122,37 +116,32 @@ export function BreakScreen() {
   const asciiArt = breakAsciiArt[currentBreak.type]
 
   return (
-    <div 
-      className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: theme.bg, color: theme.text }}
+    <div
+      className="flex flex-col items-center justify-center p-6"
+      style={{ color: theme.text, minHeight: '500px' }}
     >
       <div className="w-full max-w-lg animate-fade-in" key={breakKey}>
         {/* ASCII Art */}
-        <pre 
-          className="text-center text-sm sm:text-base leading-tight mb-6"
+        <pre
+          className="text-center text-[8px] sm:text-[10px] leading-none mb-8 overflow-x-auto"
           style={{ color: theme.accent }}
         >
           {asciiArt}
         </pre>
 
-        {/* Break type header */}
-        <div className="mb-6 text-center">
-          <span style={{ color: theme.accent }} className="text-lg">
-            {'>'} {currentBreak.type.toUpperCase()}
-          </span>
-        </div>
-
         {/* Content box */}
-        <div 
+        <div
           className="border p-6 mb-6"
           style={{ borderColor: theme.muted }}
         >
-          <p className="mb-4" style={{ color: theme.muted }}>
-            {currentBreak.noticing}
+          <p className="mb-4 text-sm" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>#</span> {currentBreak.noticing}
           </p>
-          <div className="border-t my-4" style={{ borderColor: theme.muted }} />
-          <p style={{ color: theme.accent }}>
-            {currentBreak.invitation}
+          <div className="text-xs my-4" style={{ color: theme.muted }}>
+            ────────────────────────────────────
+          </div>
+          <p className="text-sm" style={{ color: theme.accent }}>
+            <span style={{ color: theme.success }}>{'>'}</span> {currentBreak.invitation}
           </p>
         </div>
 
@@ -161,26 +150,26 @@ export function BreakScreen() {
           <div className="font-mono text-lg tracking-widest">
             [{progressBar}]
           </div>
-          <div className="mt-2" style={{ color: theme.muted }}>
+          <div className="mt-2 text-sm tracking-wider" style={{ color: theme.muted }}>
             {timeLeft}s remaining
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-center gap-6 text-sm">
+        <div className="flex items-center justify-center gap-8 text-sm tracking-wider">
           <button
             onClick={handleRepeat}
             className="hover:opacity-80 transition-opacity"
             style={{ color: theme.accent }}
           >
-            [r] repeat
+            [ r ] repeat
           </button>
           <button
             onClick={skipBreak}
             className="hover:opacity-80 transition-opacity"
             style={{ color: theme.muted }}
           >
-            [ctrl+c] skip
+            [ ^C ] skip
           </button>
         </div>
       </div>

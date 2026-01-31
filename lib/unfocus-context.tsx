@@ -1,9 +1,9 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import { themes, applyTheme, type Theme } from './themes'
+import { themes, fonts, applyTheme, applyFont, type Theme, type Font } from './themes'
 
-type Screen = 'setup' | 'ambient' | 'break' | 'summary'
+type Screen = 'boot' | 'setup' | 'ambient' | 'break' | 'summary'
 
 type BreakType = 'eyes' | 'breath' | 'posture' | 'hands' | 'hydration' | 'window'
 
@@ -58,6 +58,7 @@ interface Settings {
   soundEnabled: boolean
   notificationsEnabled: boolean
   themeId: string
+  fontId: string
 }
 
 interface Stats {
@@ -73,6 +74,7 @@ interface UnfocusContextType {
   settings: Settings
   updateSettings: (settings: Partial<Settings>) => void
   theme: Theme
+  font: Font
   stats: Stats
   sessionStartTime: number | null
   startSession: () => void
@@ -84,6 +86,8 @@ interface UnfocusContextType {
   repeatBreak: () => void
   currentBreak: BreakContent | null
   playChime: () => void
+  isDemo: boolean
+  completeBoot: () => void
 }
 
 export type { BreakType }
@@ -91,12 +95,14 @@ export type { BreakType }
 const UnfocusContext = createContext<UnfocusContextType | null>(null)
 
 export function UnfocusProvider({ children }: { children: React.ReactNode }) {
-  const [screen, setScreen] = useState<Screen>('setup')
+  const [screen, setScreen] = useState<Screen>('boot')
+  const [isDemo, setIsDemo] = useState(false)
   const [settings, setSettings] = useState<Settings>({
     interval: 45,
     soundEnabled: true,
     notificationsEnabled: false,
     themeId: 'dracula',
+    fontId: 'jetbrains',
   })
   const [stats, setStats] = useState<Stats>({
     breaksTaken: 0,
@@ -110,23 +116,44 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
   const audioContextRef = useRef<AudioContext | null>(null)
 
   const theme = themes[settings.themeId] || themes.dracula
+  const font = fonts[settings.fontId] || fonts.jetbrains
+
+  // Detect demo mode from URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const demoMode = params.get('demo') === 'true'
+    setIsDemo(demoMode)
+
+    if (demoMode) {
+      // In demo mode, use 10 second intervals
+      setSettings(prev => ({
+        ...prev,
+        interval: 10 / 60, // 10 seconds expressed in minutes
+        notificationsEnabled: true,
+      }))
+    }
+  }, [])
 
   // Load settings and stats from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem('unfocus-settings')
     const savedStats = localStorage.getItem('unfocus-stats')
-    
-    if (savedSettings) {
+
+    // Don't override demo settings
+    const params = new URLSearchParams(window.location.search)
+    const demoMode = params.get('demo') === 'true'
+
+    if (savedSettings && !demoMode) {
       const parsed = JSON.parse(savedSettings)
       setSettings(parsed)
     }
-    
+
     if (savedStats) {
       const parsed = JSON.parse(savedStats)
       // Check streak
       const today = new Date().toDateString()
       const yesterday = new Date(Date.now() - 86400000).toDateString()
-      
+
       if (parsed.lastSessionDate === today) {
         setStats(parsed)
       } else if (parsed.lastSessionDate === yesterday) {
@@ -142,6 +169,11 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
     applyTheme(theme)
   }, [theme])
 
+  // Apply font on mount and when it changes
+  useEffect(() => {
+    applyFont(font)
+  }, [font])
+
   // Save settings to localStorage
   useEffect(() => {
     localStorage.setItem('unfocus-settings', JSON.stringify(settings))
@@ -153,7 +185,19 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
   }, [stats])
 
   const updateSettings = useCallback((newSettings: Partial<Settings>) => {
+    // Request notification permission when enabling notifications
+    if (newSettings.notificationsEnabled && 'Notification' in window) {
+      Notification.requestPermission().then(permission => {
+        if (permission !== 'granted') {
+          console.log('Notification permission denied')
+        }
+      })
+    }
     setSettings(prev => ({ ...prev, ...newSettings }))
+  }, [])
+
+  const completeBoot = useCallback(() => {
+    setScreen('setup')
   }, [])
 
   const playChime = useCallback(() => {
@@ -239,12 +283,33 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
     playChime()
     
     // Show notification
-    if (settings.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
-      new Notification('unfocus', {
-        body: `time to ${randomBreak.type}`,
-        icon: '/icon.svg',
-        silent: true,
-      })
+    if (settings.notificationsEnabled && 'Notification' in window) {
+      // Request permission if not yet granted
+      if (Notification.permission === 'default') {
+        Notification.requestPermission()
+      }
+
+      if (Notification.permission === 'granted') {
+        const notification = new Notification(`⏰ UNFOCUS — ${randomBreak.type.toUpperCase()}`, {
+          body: randomBreak.invitation,
+          icon: '/icon.svg',
+          badge: '/icon.svg',
+          silent: false,
+          tag: 'unfocus-break',
+          requireInteraction: true,
+        })
+
+        // Auto-close notification after break duration
+        setTimeout(() => {
+          notification.close()
+        }, randomBreak.duration * 1000)
+
+        // Focus window when notification is clicked
+        notification.onclick = () => {
+          window.focus()
+          notification.close()
+        }
+      }
     }
   }, [settings.notificationsEnabled, playChime])
 
@@ -288,6 +353,7 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
         settings,
         updateSettings,
         theme,
+        font,
         stats,
         sessionStartTime,
         startSession,
@@ -299,6 +365,8 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
         repeatBreak,
         currentBreak,
         playChime,
+        isDemo,
+        completeBoot,
       }}
     >
       {children}

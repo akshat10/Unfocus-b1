@@ -8,6 +8,30 @@ export interface Theme {
   success: string
 }
 
+export interface Font {
+  id: string
+  name: string
+  variable: string
+  fallback: string
+}
+
+export const fonts: Record<string, Font> = {
+  jetbrains: {
+    id: 'jetbrains',
+    name: 'JetBrains Mono',
+    variable: 'var(--font-mono)',
+    fallback: 'ui-monospace, monospace',
+  },
+  doto: {
+    id: 'doto',
+    name: 'Doto',
+    variable: 'var(--font-doto)',
+    fallback: 'ui-monospace, monospace',
+  },
+}
+
+export const fontList = Object.values(fonts)
+
 export const themes: Record<string, Theme> = {
   dracula: {
     id: 'dracula',
@@ -92,4 +116,9 @@ export function applyTheme(theme: Theme) {
   root.style.setProperty('--terminal-accent', theme.accent)
   root.style.setProperty('--terminal-muted', theme.muted)
   root.style.setProperty('--terminal-success', theme.success)
+}
+
+export function applyFont(font: Font) {
+  const root = document.documentElement
+  root.style.setProperty('--active-font', `${font.variable}, ${font.fallback}`)
 }

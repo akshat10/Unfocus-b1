@@ -45,12 +45,15 @@
   --sidebar-accent-foreground: var(--terminal-text);
   --sidebar-border: var(--terminal-muted);
   --sidebar-ring: var(--terminal-accent);
+
+  /* Font */
+  --active-font: var(--font-mono), 'JetBrains Mono', ui-monospace, monospace;
 }
 
 @theme inline {
-  --font-sans: var(--font-mono), 'JetBrains Mono', monospace;
-  --font-serif: var(--font-mono), 'JetBrains Mono', monospace;
-  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+  --font-sans: var(--active-font);
+  --font-serif: var(--active-font);
+  --font-mono: var(--active-font);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -124,4 +127,167 @@
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.9;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.95;
+  }
+  97% {
+    opacity: 1;
+  }
+}
+
+.crt-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: brightness(1);
+    text-shadow: 0 0 8px currentColor;
+  }
+  50% {
+    filter: brightness(1.1);
+    text-shadow: 0 0 12px currentColor;
+  }
+}
+
+.terminal-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glitch-bars {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-glitch {
+  0%, 100% {
+    text-shadow: none;
+  }
+  20% {
+    text-shadow: -2px 0 #ff0000, 2px 0 #00ffff;
+  }
+  40% {
+    text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+  }
+  60% {
+    text-shadow: -1px 0 #ff0000, 1px 0 #00ffff;
+  }
+  80% {
+    text-shadow: 1px 0 #ff0000, -1px 0 #00ffff;
+  }
+}
+
+@keyframes phosphor-glow {
+  0%, 100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.98;
+    filter: blur(0.3px);
+  }
+}
+
+.phosphor-text {
+  animation: phosphor-glow 4s ease-in-out infinite;
+  text-shadow: 0 0 8px currentColor;
+}
+
+@keyframes screen-on {
+  0% {
+    transform: scaleY(0.01) scaleX(0);
+    filter: brightness(30);
+  }
+  30% {
+    transform: scaleY(0.01) scaleX(1);
+    filter: brightness(30);
+  }
+  50% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1);
+  }
+}
+
+.screen-on {
+  animation: screen-on 0.5s ease-out forwards;
+}
+
+/* Noise texture overlay */
+@keyframes noise {
+  0%, 100% { background-position: 0 0; }
+  10% { background-position: -5% -10%; }
+  20% { background-position: -15% 5%; }
+  30% { background-position: 7% -25%; }
+  40% { background-position: 20% 25%; }
+  50% { background-position: -25% 10%; }
+  60% { background-position: 15% 5%; }
+  70% { background-position: 0% 15%; }
+  80% { background-position: 25% 35%; }
+  90% { background-position: -10% 10%; }
+}
+
+/* Text selection style */
+::selection {
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+}
+
+/* Custom scrollbar for terminal feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terminal-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-accent);
 }

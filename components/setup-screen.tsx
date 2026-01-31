@@ -1,28 +1,42 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useUnfocus } from '@/lib/unfocus-context'
-import { themeList } from '@/lib/themes'
+import { themeList, fontList } from '@/lib/themes'
 
 export function SetupScreen() {
   const { settings, updateSettings, startSession, theme } = useUnfocus()
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null)
+
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission)
+    }
+  }, [settings.notificationsEnabled])
 
   const intervals = [30, 45, 60, 90]
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center p-4"
-      style={{ backgroundColor: theme.bg, color: theme.text }}
+    <div
+      className="flex items-center justify-center p-6"
+      style={{ color: theme.text, minHeight: '500px' }}
     >
-      <div className="w-full max-w-lg space-y-8 animate-fade-in">
+      <div className="w-full max-w-lg space-y-6 animate-fade-in">
         {/* ASCII Logo */}
-        <div className="text-center space-y-2">
-          <pre className="text-sm sm:text-base leading-tight" style={{ color: theme.accent }}>
-{`╦ ╦╔╗╔╔═╗╔═╗╔═╗╦ ╦╔═╗
-║ ║║║║╠╣ ║ ║║  ║ ║╚═╗
-╚═╝╝╚╝╚  ╚═╝╚═╝╚═╝╚═╝`}
+        <div className="text-center space-y-4">
+          <pre
+            className="text-[10px] sm:text-xs leading-none"
+            style={{ color: theme.accent }}
+          >
+{`██╗   ██╗███╗   ██╗███████╗ ██████╗  ██████╗██╗   ██╗███████╗
+██║   ██║████╗  ██║██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
+██║   ██║██╔██╗ ██║█████╗  ██║   ██║██║     ██║   ██║███████╗
+██║   ██║██║╚██╗██║██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
+╚██████╔╝██║ ╚████║██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
+ ╚═════╝ ╚═╝  ╚═══╝╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝`}
           </pre>
-          <p className="text-sm italic" style={{ color: theme.muted }}>
-            the terminal is patient. you don&apos;t have to be.
+          <p className="text-sm" style={{ color: theme.muted }}>
+            {'>'} the terminal is patient. you don&apos;t have to be.
           </p>
         </div>
 
@@ -33,13 +47,15 @@ export function SetupScreen() {
 
         {/* Interval Selection */}
         <div className="space-y-3">
-          <p style={{ color: theme.muted }}>{`> set interval`}</p>
+          <p className="text-sm tracking-wider" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>$</span> set --interval
+          </p>
           <div className="flex flex-wrap gap-2">
             {intervals.map((interval) => (
               <button
                 key={interval}
                 onClick={() => updateSettings({ interval })}
-                className="px-4 py-2 text-sm transition-all"
+                className="px-4 py-2 text-sm transition-all tracking-wider"
                 style={{
                   backgroundColor: settings.interval === interval ? theme.accent : 'transparent',
                   color: settings.interval === interval ? theme.bg : theme.text,
@@ -54,28 +70,46 @@ export function SetupScreen() {
 
         {/* Options */}
         <div className="space-y-3">
-          <p style={{ color: theme.muted }}>{`> options`}</p>
+          <p className="text-sm tracking-wider" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>$</span> set --flags
+          </p>
           <div className="flex flex-wrap gap-4">
             <button
               onClick={() => updateSettings({ soundEnabled: !settings.soundEnabled })}
-              className="text-sm hover:opacity-80 transition-opacity"
-              style={{ color: theme.text }}
+              className="text-sm hover:opacity-80 transition-opacity tracking-wider"
+              style={{ color: settings.soundEnabled ? theme.accent : theme.muted }}
             >
-              [{settings.soundEnabled ? 'x' : ' '}] sound
+              [{settings.soundEnabled ? '✓' : ' '}] --sound
             </button>
             <button
-              onClick={() => updateSettings({ notificationsEnabled: !settings.notificationsEnabled })}
-              className="text-sm hover:opacity-80 transition-opacity"
-              style={{ color: theme.text }}
+              onClick={() => {
+                updateSettings({ notificationsEnabled: !settings.notificationsEnabled })
+                // Re-check permission after a moment
+                setTimeout(() => {
+                  if ('Notification' in window) {
+                    setNotificationPermission(Notification.permission)
+                  }
+                }, 500)
+              }}
+              className="text-sm hover:opacity-80 transition-opacity tracking-wider"
+              style={{ color: settings.notificationsEnabled ? theme.accent : theme.muted }}
             >
-              [{settings.notificationsEnabled ? 'x' : ' '}] notifications
+              [{settings.notificationsEnabled ? '✓' : ' '}] --notify
+              {settings.notificationsEnabled && notificationPermission === 'denied' && (
+                <span style={{ color: '#ff5555' }}> (blocked)</span>
+              )}
+              {settings.notificationsEnabled && notificationPermission === 'default' && (
+                <span style={{ color: '#ffb000' }}> (click to allow)</span>
+              )}
             </button>
           </div>
         </div>
 
         {/* Theme Selection */}
         <div className="space-y-3">
-          <p style={{ color: theme.muted }}>{`> theme`}</p>
+          <p className="text-sm tracking-wider" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>$</span> set --theme
+          </p>
           <div className="flex flex-wrap gap-3">
             {themeList.map((t) => (
               <button
@@ -101,22 +135,47 @@ export function SetupScreen() {
           </div>
         </div>
 
+        {/* Font Selection */}
+        <div className="space-y-3">
+          <p className="text-sm tracking-wider" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>$</span> set --font
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {fontList.map((f) => (
+              <button
+                key={f.id}
+                onClick={() => updateSettings({ fontId: f.id })}
+                className="px-4 py-2 text-sm transition-all tracking-wider"
+                style={{
+                  backgroundColor: settings.fontId === f.id ? theme.accent : 'transparent',
+                  color: settings.fontId === f.id ? theme.bg : theme.text,
+                  border: `1px solid ${settings.fontId === f.id ? theme.accent : theme.muted}`,
+                  fontFamily: `${f.variable}, ${f.fallback}`,
+                }}
+              >
+                {f.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Divider */}
-        <div className="text-center" style={{ color: theme.muted }}>
-          {'─'.repeat(40)}
+        <div className="text-center text-xs" style={{ color: theme.muted }}>
+          ════════════════════════════════════════
         </div>
 
         {/* Start Button */}
         <button
           onClick={startSession}
-          className="w-full py-3 text-lg transition-all hover:opacity-90 flex items-center justify-center gap-2"
+          className="w-full py-4 text-base transition-all hover:opacity-90 flex items-center justify-center gap-3 tracking-widest"
           style={{
             backgroundColor: theme.accent,
             color: theme.bg,
           }}
         >
-          [ START SESSION ]
-          <span className="animate-blink">▊</span>
+          <span style={{ color: theme.bg }}>$</span>
+          ./start-session
+          <span className="animate-blink">█</span>
         </button>
       </div>
     </div>

@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useUnfocus } from '@/lib/unfocus-context'
 
 export function AmbientScreen() {
-  const { settings, theme, stats, sessionStartTime, endSession, triggerBreak } = useUnfocus()
-  const [timeLeft, setTimeLeft] = useState(settings.interval * 60)
+  const { settings, theme, stats, sessionStartTime, endSession, triggerBreak, isDemo } = useUnfocus()
+  const [timeLeft, setTimeLeft] = useState(Math.round(settings.interval * 60))
   const [sessionElapsed, setSessionElapsed] = useState(0)
 
   const formatTime = useCallback((seconds: number) => {
@@ -26,11 +26,14 @@ export function AmbientScreen() {
 
   // Countdown timer
   useEffect(() => {
+    const intervalSeconds = Math.round(settings.interval * 60)
+    setTimeLeft(intervalSeconds)
+
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           triggerBreak()
-          return settings.interval * 60
+          return intervalSeconds
         }
         return prev - 1
       })
@@ -70,29 +73,63 @@ export function AmbientScreen() {
   }, [triggerBreak])
 
   return (
-    <div 
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: theme.bg, color: theme.text }}
+    <div
+      className="flex flex-col"
+      style={{ color: theme.text, minHeight: '500px' }}
     >
+      {/* Demo mode banner */}
+      {isDemo && (
+        <div
+          className="px-4 py-2 text-xs text-center"
+          style={{ backgroundColor: '#ffb00020', color: '#ffb000', borderBottom: `1px solid #ffb00040` }}
+        >
+          DEMO MODE: breaks every 10 seconds
+        </div>
+      )}
+
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center animate-fade-in">
-        <div className="text-7xl sm:text-8xl md:text-9xl font-light tracking-wider">
-          {formatTime(timeLeft)}
+      <div className="flex-1 flex flex-col items-center justify-center animate-fade-in px-4">
+        {/* Small UNFOCUS watermark */}
+        <pre
+          className="text-[6px] sm:text-[8px] leading-none mb-8 opacity-30"
+          style={{ color: theme.accent }}
+        >
+{`██╗   ██╗███╗   ██╗███████╗ ██████╗  ██████╗██╗   ██╗███████╗
+██║   ██║████╗  ██║██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
+██║   ██║██╔██╗ ██║█████╗  ██║   ██║██║     ██║   ██║███████╗
+██║   ██║██║╚██╗██║██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
+╚██████╔╝██║ ╚████║██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
+ ╚═════╝ ╚═╝  ╚═══╝╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝`}
+        </pre>
+
+        {/* Time display with terminal frame */}
+        <div
+          className="border px-8 py-6 mb-4"
+          style={{ borderColor: theme.muted }}
+        >
+          <div
+            className="text-6xl sm:text-7xl md:text-8xl font-light tracking-widest tabular-nums"
+            style={{ color: theme.accent }}
+          >
+            {formatTime(timeLeft)}
+          </div>
         </div>
-        <p className="mt-4 text-lg" style={{ color: theme.muted }}>
-          until next break
+
+        <p className="text-sm tracking-widest uppercase" style={{ color: theme.muted }}>
+          {'>'} next break in
         </p>
-        <div className="mt-8">
-          <span className="text-2xl animate-blink">▊</span>
+
+        <div className="mt-6">
+          <span className="text-2xl animate-blink" style={{ color: theme.accent }}>█</span>
         </div>
-        
+
         {/* Take break now button */}
         <button
           onClick={triggerBreak}
-          className="mt-12 px-6 py-2 border text-sm hover:opacity-80 transition-opacity"
+          className="mt-10 px-6 py-2 border text-sm hover:opacity-80 transition-opacity tracking-wider"
           style={{ borderColor: theme.muted, color: theme.muted }}
         >
-          [b] take a break now
+          [ b ] TAKE BREAK NOW
         </button>
       </div>
 

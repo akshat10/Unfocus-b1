@@ -1,12 +1,17 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono, Doto } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const mono = JetBrains_Mono({ 
+const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono"
+});
+
+const doto = Doto({
+  subsets: ["latin"],
+  variable: "--font-doto"
 });
 
 export const metadata: Metadata = {
@@ -45,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${mono.variable} font-mono antialiased`}>
+      <body className={`${mono.variable} ${doto.variable} font-mono antialiased`}>
         {children}
         <Analytics />
       </body>

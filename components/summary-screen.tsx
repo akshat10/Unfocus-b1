@@ -68,77 +68,90 @@ export function SummaryScreen() {
   }
 
   return (
-    <div 
-      className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: theme.bg, color: theme.text }}
+    <div
+      className="flex flex-col items-center justify-center p-6"
+      style={{ color: theme.text, minHeight: '500px' }}
     >
       <div className="w-full max-w-lg space-y-8 animate-fade-in">
         {/* Visible summary */}
         <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl" style={{ color: theme.accent }}>SESSION COMPLETE</h1>
-            <div style={{ color: theme.accent }}>{'═'.repeat(16)}</div>
-          </div>
+          {/* ASCII Header */}
+          <pre
+            className="text-[8px] sm:text-[10px] leading-none"
+            style={{ color: theme.success }}
+          >
+{`██████╗  ██████╗ ███╗   ██╗███████╗
+██╔══██╗██╔═══██╗████╗  ██║██╔════╝
+██║  ██║██║   ██║██╔██╗ ██║█████╗
+██║  ██║██║   ██║██║╚██╗██║██╔══╝
+██████╔╝╚██████╔╝██║ ╚████║███████╗
+╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝`}
+          </pre>
 
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span style={{ color: theme.muted }}>duration</span>
-              <span>{formatDuration(sessionDuration)}</span>
+          {/* Stats as terminal output */}
+          <div
+            className="border p-4 text-sm space-y-1"
+            style={{ borderColor: theme.muted }}
+          >
+            <div className="flex gap-4">
+              <span style={{ color: theme.muted }}>duration:</span>
+              <span style={{ color: theme.accent }}>{formatDuration(sessionDuration)}</span>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: theme.muted }}>breaks</span>
-              <span>{stats.breaksTaken}</span>
+            <div className="flex gap-4">
+              <span style={{ color: theme.muted }}>breaks:</span>
+              <span style={{ color: theme.accent }}>{stats.breaksTaken}</span>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: theme.muted }}>presence</span>
-              <span>{Math.floor(stats.presenceSeconds / 60)} min</span>
+            <div className="flex gap-4">
+              <span style={{ color: theme.muted }}>presence:</span>
+              <span style={{ color: theme.accent }}>{Math.floor(stats.presenceSeconds / 60)} min</span>
             </div>
-            <div className="flex justify-between">
-              <span style={{ color: theme.muted }}>streak</span>
-              <span>
-                {stats.streakDays} days {stats.streakDays > 1 ? '🔥' : ''}
+            <div className="flex gap-4">
+              <span style={{ color: theme.muted }}>streak:</span>
+              <span style={{ color: theme.success }}>
+                {stats.streakDays} days {stats.streakDays > 1 ? '█▓▒░' : ''}
               </span>
             </div>
           </div>
 
-          <div style={{ color: theme.muted }}>{'─'.repeat(40)}</div>
-
-          <p className="text-sm italic" style={{ color: theme.muted }}>
-            &quot;{quote}&quot;
+          {/* Quote as comment */}
+          <p className="text-sm tracking-wide" style={{ color: theme.muted }}>
+            <span style={{ color: theme.success }}>#</span> {quote}
           </p>
 
-          <div style={{ color: theme.muted }}>{'─'.repeat(40)}</div>
+          <div className="text-xs" style={{ color: theme.muted }}>
+            ════════════════════════════════════════
+          </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={handleExport}
-              className="px-4 py-2 text-sm transition-all hover:opacity-80"
+              className="px-4 py-2 text-sm transition-all hover:opacity-80 tracking-wider"
               style={{
                 border: `1px solid ${theme.muted}`,
                 color: theme.text,
               }}
             >
-              [ EXPORT ]
+              <span style={{ color: theme.success }}>$</span> export
             </button>
             <button
               onClick={handleNewSession}
-              className="px-4 py-2 text-sm transition-all hover:opacity-90"
+              className="px-4 py-2 text-sm transition-all hover:opacity-90 tracking-wider"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.bg,
               }}
             >
-              [ NEW SESSION ]
+              ./new-session
             </button>
             <button
               onClick={handleBackToSetup}
-              className="px-4 py-2 text-sm transition-all hover:opacity-80"
+              className="px-4 py-2 text-sm transition-all hover:opacity-80 tracking-wider"
               style={{
                 border: `1px solid ${theme.muted}`,
                 color: theme.text,
               }}
             >
-              [ SETTINGS ]
+              <span style={{ color: theme.success }}>$</span> config
             </button>
           </div>
         </div>
