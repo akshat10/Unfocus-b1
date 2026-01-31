@@ -1,0 +1,18 @@
+{
+  "name": "unfocus-cli",
+  "version": "0.0.1",
+  "description": "Terminal break reminders for developers. Touch grass sometimes.",
+  "keywords": ["cli", "breaks", "terminal", "productivity", "health", "pomodoro"],
+  "author": "Akshat Mishra",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akshat10/Unfocus-b1"
+  },
+  "bin": {
+    "unfocus": "./index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
