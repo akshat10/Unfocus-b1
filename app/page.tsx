@@ -1,31 +1,32 @@
-"use client"
+'use client'
 
-import { useState } from 'react'
-import { BreakProvider, useBreak } from '@/lib/break-context'
-import { Dashboard } from '@/components/dashboard'
-import { AmbientMode } from '@/components/ambient-mode'
-import { SettingsPanel } from '@/components/settings-panel'
+import { UnfocusProvider, useUnfocus } from '@/lib/unfocus-context'
+import { SetupScreen } from '@/components/setup-screen'
+import { AmbientScreen } from '@/components/ambient-screen'
+import { BreakScreen } from '@/components/break-screen'
+import { SummaryScreen } from '@/components/summary-screen'
 
-function AppContent() {
-  const { isAmbientMode } = useBreak()
-  const [settingsOpen, setSettingsOpen] = useState(false)
+function UnfocusApp() {
+  const { screen } = useUnfocus()
 
-  return (
-    <>
-      {isAmbientMode ? (
-        <AmbientMode />
-      ) : (
-        <Dashboard onOpenSettings={() => setSettingsOpen(true)} />
-      )}
-      <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </>
-  )
+  switch (screen) {
+    case 'setup':
+      return <SetupScreen />
+    case 'ambient':
+      return <AmbientScreen />
+    case 'break':
+      return <BreakScreen />
+    case 'summary':
+      return <SummaryScreen />
+    default:
+      return <SetupScreen />
+  }
 }
 
-export default function Home() {
+export default function Page() {
   return (
-    <BreakProvider>
-      <AppContent />
-    </BreakProvider>
+    <UnfocusProvider>
+      <UnfocusApp />
+    </UnfocusProvider>
   )
 }
