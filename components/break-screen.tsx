@@ -72,8 +72,12 @@ export function BreakScreen() {
       {/* Header - compact */}
       <div className="text-center mb-2">
         <pre
-          className="text-[6px] sm:text-[8px] leading-none inline-block"
-          style={{ color: theme.accent }}
+          className="text-[5px] sm:text-[7px] leading-none inline-block select-none"
+          style={{
+            color: theme.accent,
+            fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+            letterSpacing: '0',
+          }}
         >
           {breakHeaders[currentBreak.type]}
         </pre>

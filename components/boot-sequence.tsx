@@ -113,15 +113,18 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
     >
       {/* ASCII Logo */}
       <pre
-        className="text-[7px] sm:text-[9px] mb-6 leading-tight"
-        style={{ color: theme.accent, fontFamily: 'JetBrains Mono, monospace' }}
-      >{`
- _   _ _   _ _____ ___   ___ _   _ ___
-| | | | \\ | |  ___/ _ \\ / __| | | / __|
-| | | |  \\| | |_ | | | | |  | | | \\__ \\
-| |_| | |\\  |  _|| |_| | |__| |_| |__) |
- \\___/|_| \\_|_|   \\___/ \\___|\\___/|___/
-      `.trim()}</pre>
+        className="text-[6px] sm:text-[8px] md:text-[10px] mb-6 leading-none select-none"
+        style={{
+          color: theme.accent,
+          fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+          letterSpacing: '0',
+        }}
+      >{`██╗   ██╗███╗   ██╗███████╗ ██████╗  ██████╗██╗   ██╗███████╗
+██║   ██║████╗  ██║██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
+██║   ██║██╔██╗ ██║█████╗  ██║   ██║██║     ██║   ██║███████╗
+██║   ██║██║╚██╗██║██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
+╚██████╔╝██║ ╚████║██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
+ ╚═════╝ ╚═╝  ╚═══╝╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
 
       <div className="space-y-1 font-mono">
         {/* Completed lines */}
