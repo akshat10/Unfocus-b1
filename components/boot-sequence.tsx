@@ -28,16 +28,8 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
   const { theme } = useUnfocus()
   const [lines, setLines] = useState<BootLine[]>([])
   const [currentText, setCurrentText] = useState('')
-  const [showCursor, setShowCursor] = useState(true)
   const [isTyping, setIsTyping] = useState(false)
-
-  // Cursor blink
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowCursor(prev => !prev)
-    }, 530)
-    return () => clearInterval(interval)
-  }, [])
+  const [bootComplete, setBootComplete] = useState(false)
 
   // Skip boot if requested
   useEffect(() => {
@@ -56,8 +48,9 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
 
     const typeNextChar = () => {
       if (lineIndex >= bootMessages.length) {
-        // All done, wait a moment then complete
-        setTimeout(onComplete, 500)
+        // All done, show prompt then complete
+        setBootComplete(true)
+        setTimeout(onComplete, 800)
         return
       }
 
@@ -72,7 +65,7 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
         setCurrentText(currentLine.text.slice(0, charIndex + 1))
         charIndex++
         // Vary typing speed for more natural feel
-        const delay = Math.random() * 15 + 10
+        const delay = Math.random() * 12 + 8
         timeoutId = setTimeout(typeNextChar, delay)
       } else {
         // Line complete
@@ -82,7 +75,7 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
         lineIndex++
         charIndex = 0
         // Pause between lines
-        const pause = 150 + Math.random() * 100
+        const pause = 120 + Math.random() * 80
         timeoutId = setTimeout(typeNextChar, pause)
       }
     }
@@ -120,7 +113,7 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
     >
       {/* ASCII Logo */}
       <pre
-        className="text-[10px] sm:text-xs mb-6 leading-tight"
+        className="text-[8px] sm:text-[10px] mb-6 leading-tight font-mono"
         style={{ color: theme.accent }}
       >
 {`
@@ -133,7 +126,7 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
 `}
       </pre>
 
-      <div className="space-y-1">
+      <div className="space-y-1 font-mono">
         {/* Completed lines */}
         {lines.map((line, i) => (
           <div key={i} className="flex items-center gap-4">
@@ -153,31 +146,16 @@ export function BootSequence({ onComplete, skipBoot = false }: BootSequenceProps
             <span style={{ color: theme.muted }}>
               [{bootMessages[lines.length]?.time.padStart(7)}]
             </span>
-            <span>
-              {currentText}
-              <span
-                className="inline-block w-2 h-4 ml-0.5 -mb-0.5"
-                style={{
-                  backgroundColor: showCursor ? theme.accent : 'transparent',
-                  transition: 'none'
-                }}
-              />
-            </span>
+            <span>{currentText}_</span>
           </div>
         )}
 
         {/* Final prompt after boot */}
-        {lines.length === bootMessages.length && (
+        {bootComplete && (
           <div className="mt-6 animate-fade-in">
             <div className="flex items-center gap-2">
               <span style={{ color: theme.success }}>$</span>
               <span>./start-session</span>
-              <span
-                className="inline-block w-2 h-4 ml-0.5"
-                style={{
-                  backgroundColor: showCursor ? theme.accent : 'transparent',
-                }}
-              />
             </div>
           </div>
         )}

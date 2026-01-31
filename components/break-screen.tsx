@@ -2,57 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useUnfocus, type BreakType } from '@/lib/unfocus-context'
-
-const breakAsciiArt: Record<BreakType, string> = {
-  eyes: `
-███████╗██╗   ██╗███████╗███████╗
-██╔════╝╚██╗ ██╔╝██╔════╝██╔════╝
-█████╗   ╚████╔╝ █████╗  ███████╗
-██╔══╝    ╚██╔╝  ██╔══╝  ╚════██║
-███████╗   ██║   ███████╗███████║
-╚══════╝   ╚═╝   ╚══════╝╚══════╝
-`,
-  breath: `
-██████╗ ██████╗ ███████╗ █████╗ ████████╗██╗  ██╗
-██╔══██╗██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██║  ██║
-██████╔╝██████╔╝█████╗  ███████║   ██║   ███████║
-██╔══██╗██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══██║
-██████╔╝██║  ██║███████╗██║  ██║   ██║   ██║  ██║
-╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
-`,
-  posture: `
-██████╗  ██████╗ ███████╗████████╗██╗   ██╗██████╗ ███████╗
-██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔════╝
-██████╔╝██║   ██║███████╗   ██║   ██║   ██║██████╔╝█████╗
-██╔═══╝ ██║   ██║╚════██║   ██║   ██║   ██║██╔══██╗██╔══╝
-██║     ╚██████╔╝███████║   ██║   ╚██████╔╝██║  ██║███████╗
-╚═╝      ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝
-`,
-  hands: `
-██╗  ██╗ █████╗ ███╗   ██╗██████╗ ███████╗
-██║  ██║██╔══██╗████╗  ██║██╔══██╗██╔════╝
-███████║███████║██╔██╗ ██║██║  ██║███████╗
-██╔══██║██╔══██║██║╚██╗██║██║  ██║╚════██║
-██║  ██║██║  ██║██║ ╚████║██████╔╝███████║
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝
-`,
-  hydration: `
-██╗  ██╗██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
-██║  ██║╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
-███████║ ╚████╔╝ ██║  ██║██████╔╝███████║   ██║   █████╗
-██╔══██║  ╚██╔╝  ██║  ██║██╔══██╗██╔══██║   ██║   ██╔══╝
-██║  ██║   ██║   ██████╔╝██║  ██║██║  ██║   ██║   ███████╗
-╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
-`,
-  window: `
-██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗
-██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║
-██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║
-██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║
-╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝
- ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝
-`,
-}
+import { AsciiAnimation, breakHeaders } from './ascii-animations'
 
 export function BreakScreen() {
   const { theme, currentBreak, completeBreak, skipBreak, repeatBreak } = useUnfocus()
@@ -109,65 +59,109 @@ export function BreakScreen() {
   if (!currentBreak) return null
 
   // Generate progress bar with block characters
-  const barLength = 20
+  const barLength = 30
   const filledLength = Math.floor(progress * barLength)
   const progressBar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength)
 
-  const asciiArt = breakAsciiArt[currentBreak.type]
-
   return (
     <div
-      className="flex flex-col items-center justify-center p-6"
-      style={{ color: theme.text, minHeight: '500px' }}
+      className="flex flex-col h-full p-4 sm:p-6 font-mono"
+      style={{ color: theme.text, minHeight: '520px' }}
+      key={breakKey}
     >
-      <div className="w-full max-w-lg animate-fade-in" key={breakKey}>
-        {/* ASCII Art */}
+      {/* Header - compact */}
+      <div className="text-center mb-2">
         <pre
-          className="text-center text-[8px] sm:text-[10px] leading-none mb-8 overflow-x-auto"
+          className="text-[6px] sm:text-[8px] leading-none inline-block"
           style={{ color: theme.accent }}
         >
-          {asciiArt}
+          {breakHeaders[currentBreak.type]}
         </pre>
+      </div>
 
-        {/* Content box */}
+      {/* Main content area - two columns on larger screens */}
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-8 items-center justify-center">
+        {/* Animation - takes center stage */}
         <div
-          className="border p-6 mb-6"
-          style={{ borderColor: theme.muted }}
+          className="flex items-center justify-center p-4 border rounded"
+          style={{
+            borderColor: theme.muted,
+            backgroundColor: `${theme.bg}`,
+            minWidth: '200px',
+            minHeight: '180px',
+          }}
         >
-          <p className="mb-4 text-sm" style={{ color: theme.muted }}>
-            <span style={{ color: theme.success }}>#</span> {currentBreak.noticing}
-          </p>
-          <div className="text-xs my-4" style={{ color: theme.muted }}>
-            ────────────────────────────────────
-          </div>
-          <p className="text-sm" style={{ color: theme.accent }}>
-            <span style={{ color: theme.success }}>{'>'}</span> {currentBreak.invitation}
-          </p>
+          <AsciiAnimation
+            type={currentBreak.type}
+            progress={progress}
+            className="text-sm sm:text-base"
+            style={{ color: theme.accent }}
+          />
         </div>
 
-        {/* Progress bar */}
-        <div className="text-center mb-8">
-          <div className="font-mono text-lg tracking-widest">
+        {/* Instructions panel */}
+        <div className="flex-1 max-w-md space-y-4">
+          {/* Noticing */}
+          <div
+            className="p-4 border-l-2"
+            style={{ borderColor: theme.muted, backgroundColor: `${theme.muted}10` }}
+          >
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: theme.muted }}>
+              # notice
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: theme.text }}>
+              {currentBreak.noticing}
+            </p>
+          </div>
+
+          {/* Invitation */}
+          <div
+            className="p-4 border-l-2"
+            style={{ borderColor: theme.accent, backgroundColor: `${theme.accent}10` }}
+          >
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: theme.accent }}>
+              {'>'} do this
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: theme.text }}>
+              {currentBreak.invitation}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom section - progress and controls */}
+      <div className="mt-4 space-y-4">
+        {/* Progress bar - full width */}
+        <div className="text-center">
+          <div
+            className="font-mono text-xs sm:text-sm tracking-wider overflow-hidden"
+            style={{ color: theme.accent }}
+          >
             [{progressBar}]
           </div>
-          <div className="mt-2 text-sm tracking-wider" style={{ color: theme.muted }}>
-            {timeLeft}s remaining
+          <div className="mt-1 flex items-center justify-center gap-4">
+            <span className="text-2xl font-light tabular-nums" style={{ color: theme.text }}>
+              {timeLeft}s
+            </span>
+            <span className="text-xs" style={{ color: theme.muted }}>
+              remaining
+            </span>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-center gap-8 text-sm tracking-wider">
+        <div className="flex items-center justify-center gap-6 text-sm">
           <button
             onClick={handleRepeat}
-            className="hover:opacity-80 transition-opacity"
-            style={{ color: theme.accent }}
+            className="px-4 py-2 border hover:opacity-80 transition-opacity tracking-wider"
+            style={{ borderColor: theme.accent, color: theme.accent }}
           >
             [ r ] repeat
           </button>
           <button
             onClick={skipBreak}
-            className="hover:opacity-80 transition-opacity"
-            style={{ color: theme.muted }}
+            className="px-4 py-2 border hover:opacity-80 transition-opacity tracking-wider"
+            style={{ borderColor: theme.muted, color: theme.muted }}
           >
             [ ^C ] skip
           </button>

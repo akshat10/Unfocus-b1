@@ -12,7 +12,7 @@ interface TerminalWindowProps {
 }
 
 export function TerminalWindow({ children, title = 'unfocus', showInput = true }: TerminalWindowProps) {
-  const { theme, screen } = useUnfocus()
+  const { theme, screen, isDemo } = useUnfocus()
   const [time, setTime] = useState('')
 
   useEffect(() => {
@@ -42,9 +42,9 @@ export function TerminalWindow({ children, title = 'unfocus', showInput = true }
       {/* CRT Effects */}
       <CRTEffects />
 
-      {/* Terminal window */}
+      {/* Terminal window - expanded */}
       <div
-        className="w-full max-w-2xl rounded-lg overflow-hidden shadow-2xl relative"
+        className="w-full max-w-4xl rounded-lg overflow-hidden shadow-2xl relative"
         style={{
           backgroundColor: theme.bg,
           boxShadow: `
@@ -81,10 +81,18 @@ export function TerminalWindow({ children, title = 'unfocus', showInput = true }
 
           {/* Title */}
           <div
-            className="text-sm tracking-wide"
+            className="text-sm tracking-wide flex items-center gap-2"
             style={{ color: theme.text }}
           >
             {title}
+            {isDemo && (
+              <span
+                className="text-xs px-2 py-0.5 rounded"
+                style={{ backgroundColor: '#ffb00030', color: '#ffb000' }}
+              >
+                DEMO
+              </span>
+            )}
           </div>
 
           {/* Time */}
@@ -100,8 +108,8 @@ export function TerminalWindow({ children, title = 'unfocus', showInput = true }
         <div
           className="relative overflow-y-auto"
           style={{
-            minHeight: '460px',
-            maxHeight: 'calc(80vh - 120px)',
+            minHeight: '540px',
+            maxHeight: 'calc(85vh - 100px)',
           }}
         >
           {children}
@@ -110,22 +118,22 @@ export function TerminalWindow({ children, title = 'unfocus', showInput = true }
         {/* Terminal input */}
         {showInput && screen !== 'boot' && <TerminalInput />}
 
-        {/* Bottom status bar */}
+        {/* Bottom status bar - improved readability */}
         <div
-          className="flex items-center justify-between px-4 py-1.5 text-xs"
+          className="flex items-center justify-between px-4 py-2 text-xs font-mono"
           style={{
-            backgroundColor: `color-mix(in srgb, ${theme.bg} 80%, ${theme.text} 20%)`,
-            borderTop: `1px solid ${theme.muted}40`,
-            color: theme.muted,
+            backgroundColor: `color-mix(in srgb, ${theme.bg} 40%, #000 60%)`,
+            borderTop: `1px solid ${theme.muted}30`,
           }}
         >
-          <span>unfocus v1.0.0</span>
+          <span style={{ color: theme.text, opacity: 0.7 }}>unfocus v1.0.0</span>
+          <span style={{ color: theme.muted }}>type /help for commands</span>
           <span className="flex items-center gap-2">
             <span
-              className="w-1.5 h-1.5 rounded-full animate-pulse"
-              style={{ backgroundColor: theme.success, boxShadow: `0 0 6px ${theme.success}` }}
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: theme.success, boxShadow: `0 0 8px ${theme.success}` }}
             />
-            <span style={{ color: theme.success }}>connected</span>
+            <span style={{ color: theme.success }}>ready</span>
           </span>
         </div>
       </div>

@@ -22,12 +22,6 @@ export const fonts: Record<string, Font> = {
     variable: 'var(--font-mono)',
     fallback: 'ui-monospace, monospace',
   },
-  doto: {
-    id: 'doto',
-    name: 'Doto',
-    variable: 'var(--font-doto)',
-    fallback: 'ui-monospace, monospace',
-  },
 }
 
 export const fontList = Object.values(fonts)

@@ -4,23 +4,23 @@ import { useState, useRef, useEffect } from 'react'
 import { useUnfocus } from '@/lib/unfocus-context'
 
 const COMMANDS: Record<string, { description: string; action: string }> = {
-  'help': { description: 'show available commands', action: 'help' },
-  'start': { description: 'start a new session', action: 'start' },
-  'break': { description: 'trigger a break now', action: 'break' },
-  'end': { description: 'end current session', action: 'end' },
-  'config': { description: 'open settings', action: 'config' },
-  'theme': { description: 'cycle through themes', action: 'theme' },
-  'clear': { description: 'clear terminal history', action: 'clear' },
-  'eyes': { description: 'eye break', action: 'eyes' },
-  'breath': { description: 'breathing break', action: 'breath' },
-  'posture': { description: 'posture check', action: 'posture' },
-  'hands': { description: 'hand stretch', action: 'hands' },
-  'hydrate': { description: 'hydration reminder', action: 'hydrate' },
-  'window': { description: 'look outside', action: 'window' },
+  '/help': { description: 'show available commands', action: 'help' },
+  '/start': { description: 'start a new session', action: 'start' },
+  '/break': { description: 'trigger a break now', action: 'break' },
+  '/end': { description: 'end current session', action: 'end' },
+  '/settings': { description: 'open settings panel', action: 'settings' },
+  '/theme': { description: 'cycle through themes', action: 'theme' },
+  '/clear': { description: 'clear terminal output', action: 'clear' },
+  '/eyes': { description: 'start eye break', action: 'eyes' },
+  '/breath': { description: 'start breathing break', action: 'breath' },
+  '/posture': { description: 'start posture check', action: 'posture' },
+  '/hands': { description: 'start hand stretch', action: 'hands' },
+  '/hydrate': { description: 'start hydration break', action: 'hydrate' },
+  '/window': { description: 'start window break', action: 'window' },
 }
 
 interface HistoryLine {
-  type: 'input' | 'output' | 'error'
+  type: 'input' | 'output' | 'error' | 'system'
   text: string
 }
 
@@ -41,17 +41,8 @@ export function TerminalInput() {
   const [history, setHistory] = useState<HistoryLine[]>([])
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
-  const [cursorVisible, setCursorVisible] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
   const historyRef = useRef<HTMLDivElement>(null)
-
-  // Cursor blink
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCursorVisible(prev => !prev)
-    }, 530)
-    return () => clearInterval(interval)
-  }, [])
 
   // Auto-scroll history
   useEffect(() => {
@@ -65,7 +56,7 @@ export function TerminalInput() {
     inputRef.current?.focus()
   }
 
-  const addOutput = (text: string, type: 'output' | 'error' = 'output') => {
+  const addOutput = (text: string, type: 'output' | 'error' | 'system' = 'output') => {
     setHistory(prev => [...prev, { type, text }])
   }
 
@@ -74,94 +65,116 @@ export function TerminalInput() {
     if (!trimmed) return
 
     // Add to history
-    setHistory(prev => [...prev, { type: 'input', text: `$ ${cmd}` }])
+    setHistory(prev => [...prev, { type: 'input', text: `> ${cmd}` }])
     setCommandHistory(prev => [...prev, cmd])
     setHistoryIndex(-1)
 
-    const [command, ...args] = trimmed.split(' ')
+    // Normalize command (add / if missing for known commands)
+    let command = trimmed
+    if (!command.startsWith('/') && COMMANDS[`/${command}`]) {
+      command = `/${command}`
+    }
+
+    const [cmdName, ...args] = command.split(' ')
 
     // Get available themes for cycling
     const themeIds = ['dracula', 'nord', 'gruvbox', 'tokyoNight', 'catppuccin', 'synthwave', 'greenTerminal', 'amber']
 
-    switch (command) {
+    switch (cmdName) {
+      case '/help':
       case 'help':
-        addOutput('┌─────────────────────────────────────┐')
-        addOutput('│         AVAILABLE COMMANDS          │')
-        addOutput('├─────────────────────────────────────┤')
+        addOutput('')
+        addOutput('UNFOCUS COMMANDS', 'system')
+        addOutput('────────────────────────────────────')
         Object.entries(COMMANDS).forEach(([cmd, { description }]) => {
-          addOutput(`│  ${cmd.padEnd(10)} ${description.padEnd(23)}│`)
+          addOutput(`  ${cmd.padEnd(12)} ${description}`)
         })
-        addOutput('└─────────────────────────────────────┘')
+        addOutput('')
+        addOutput('tip: commands work with or without /')
         break
 
+      case '/start':
       case 'start':
         if (screen === 'setup' || screen === 'summary') {
-          addOutput('> initializing session...')
+          addOutput('initializing session...', 'system')
           setTimeout(() => startSession(), 300)
         } else {
           addOutput('session already active', 'error')
         }
         break
 
+      case '/break':
       case 'break':
         if (screen === 'ambient') {
-          addOutput('> triggering break...')
+          addOutput('triggering break...', 'system')
           setTimeout(() => triggerBreak(), 300)
         } else {
           addOutput('no active session', 'error')
         }
         break
 
+      case '/end':
       case 'end':
         if (screen === 'ambient' || screen === 'break') {
-          addOutput('> ending session...')
+          addOutput('ending session...', 'system')
           setTimeout(() => endSession(), 300)
         } else {
           addOutput('no active session', 'error')
         }
         break
 
+      case '/settings':
+      case 'settings':
       case 'config':
-        addOutput('> opening config...')
-        setTimeout(() => setScreen('setup'), 300)
+        addOutput('opening settings...', 'system')
+        setTimeout(() => setScreen('settings'), 300)
         break
 
+      case '/theme':
       case 'theme':
         const currentIndex = themeIds.indexOf(settings.themeId)
         const nextIndex = (currentIndex + 1) % themeIds.length
         const nextTheme = themeIds[nextIndex]
         updateSettings({ themeId: nextTheme })
-        addOutput(`> theme set to ${nextTheme}`)
+        addOutput(`theme: ${nextTheme}`, 'system')
         break
 
+      case '/clear':
       case 'clear':
         setHistory([])
         break
 
+      case '/eyes':
       case 'eyes':
+      case '/breath':
       case 'breath':
+      case '/posture':
       case 'posture':
+      case '/hands':
       case 'hands':
+      case '/window':
       case 'window':
+        const breakType = cmdName.replace('/', '')
         if (screen === 'ambient') {
-          addOutput(`> initiating ${command} break...`)
-          setTimeout(() => triggerSpecificBreak(command as any), 300)
+          addOutput(`starting ${breakType} break...`, 'system')
+          setTimeout(() => triggerSpecificBreak(breakType as any), 300)
         } else {
-          addOutput('start a session first', 'error')
+          addOutput('start a session first with /start', 'error')
         }
         break
 
+      case '/hydrate':
       case 'hydrate':
         if (screen === 'ambient') {
-          addOutput('> initiating hydration break...')
+          addOutput('starting hydration break...', 'system')
           setTimeout(() => triggerSpecificBreak('hydration'), 300)
         } else {
-          addOutput('start a session first', 'error')
+          addOutput('start a session first with /start', 'error')
         }
         break
 
       case 'sudo':
-        addOutput('nice try.', 'error')
+        addOutput('nice try, hacker.', 'error')
         break
 
       case 'exit':
@@ -170,29 +183,52 @@ export function TerminalInput() {
         break
 
       case 'ls':
-        addOutput('breaks/  config/  stats/  themes/')
+        addOutput('breaks/  config/  stats/  README.md')
         break
 
       case 'pwd':
-        addOutput('/home/user/unfocus')
+        addOutput('/home/human/unfocus')
         break
 
       case 'whoami':
-        addOutput('someone who needs a break')
+        addOutput('someone who needs to touch grass')
         break
 
       case 'neofetch':
+        addOutput('')
         addOutput('       ▄▄▄▄▄▄▄      user@unfocus')
         addOutput('      ▐░░░░░░░▌     ─────────────')
         addOutput('      ▐░▄▄▄░░░▌     OS: unfocus v1.0.0')
         addOutput('      ▐░░░░░░░▌     Shell: /bin/rest')
         addOutput('      ▐░░░░░░░▌     Theme: ' + settings.themeId)
-        addOutput('       ▀▀▀▀▀▀▀      Uptime: taking breaks')
+        addOutput('       ▀▀▀▀▀▀▀      Mission: touch grass')
+        addOutput('')
+        break
+
+      case 'cat':
+        if (args[0] === 'README.md') {
+          addOutput('')
+          addOutput('# unfocus')
+          addOutput('')
+          addOutput('a terminal for humans who forget to rest.')
+          addOutput('')
+          addOutput('## usage')
+          addOutput('  /start    begin a focus session')
+          addOutput('  /break    take a break now')
+          addOutput('  /end      end session')
+          addOutput('')
+        } else {
+          addOutput(`cat: ${args[0] || 'missing file'}: No such file`, 'error')
+        }
         break
 
       default:
-        addOutput(`command not found: ${command}`, 'error')
-        addOutput('type "help" for available commands')
+        if (cmdName.startsWith('/')) {
+          addOutput(`unknown command: ${cmdName}`, 'error')
+        } else {
+          addOutput(`command not found: ${cmdName}`, 'error')
+        }
+        addOutput('type /help for available commands')
     }
 
     setInput('')
@@ -221,7 +257,8 @@ export function TerminalInput() {
     } else if (e.key === 'Tab') {
       e.preventDefault()
       // Auto-complete
-      const matches = Object.keys(COMMANDS).filter(cmd => cmd.startsWith(input.toLowerCase()))
+      const searchTerm = input.startsWith('/') ? input : `/${input}`
+      const matches = Object.keys(COMMANDS).filter(cmd => cmd.startsWith(searchTerm.toLowerCase()))
       if (matches.length === 1) {
         setInput(matches[0])
       } else if (matches.length > 1) {
@@ -235,24 +272,27 @@ export function TerminalInput() {
 
   return (
     <div
-      className="border-t cursor-text"
-      style={{ borderColor: theme.muted }}
+      className="border-t cursor-text font-mono"
+      style={{ borderColor: `${theme.muted}40` }}
       onClick={handleContainerClick}
     >
       {/* History */}
       {history.length > 0 && (
         <div
           ref={historyRef}
-          className="max-h-32 overflow-y-auto px-3 py-2 text-xs space-y-0.5"
-          style={{ backgroundColor: `${theme.bg}80` }}
+          className="max-h-40 overflow-y-auto px-4 py-3 text-sm space-y-1"
+          style={{ backgroundColor: `${theme.bg}90` }}
         >
           {history.map((line, i) => (
             <div
               key={i}
+              className="font-mono"
               style={{
                 color: line.type === 'error' ? '#ff5555' :
                        line.type === 'input' ? theme.accent :
-                       theme.muted
+                       line.type === 'system' ? theme.success :
+                       theme.text,
+                opacity: line.type === 'output' ? 0.8 : 1,
               }}
             >
               {line.text}
@@ -262,36 +302,25 @@ export function TerminalInput() {
       )}
 
       {/* Input line */}
-      <div className="flex items-center px-3 py-2 text-sm">
-        <span style={{ color: theme.success }} className="mr-2">$</span>
-        <div className="flex-1 relative">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full bg-transparent outline-none"
-            style={{ color: theme.text, caretColor: 'transparent' }}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-          />
-          {/* Custom cursor */}
-          <span
-            className="absolute top-0 pointer-events-none"
-            style={{
-              left: `${input.length}ch`,
-              color: cursorVisible ? theme.accent : 'transparent',
-            }}
-          >
-            █
-          </span>
-        </div>
-        <span className="text-xs ml-2" style={{ color: theme.muted }}>
-          type "help"
-        </span>
+      <div
+        className="flex items-center px-4 py-3 text-sm font-mono"
+        style={{ backgroundColor: `${theme.bg}` }}
+      >
+        <span style={{ color: theme.success }} className="mr-2 font-bold">$</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="type a command..."
+          className="flex-1 bg-transparent outline-none font-mono placeholder:opacity-30"
+          style={{ color: theme.text }}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+        />
       </div>
     </div>
   )

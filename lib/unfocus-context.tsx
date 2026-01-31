@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { themes, fonts, applyTheme, applyFont, type Theme, type Font } from './themes'
 
-type Screen = 'boot' | 'setup' | 'ambient' | 'break' | 'summary'
+type Screen = 'boot' | 'setup' | 'settings' | 'ambient' | 'break' | 'summary'
 
 type BreakType = 'eyes' | 'breath' | 'posture' | 'hands' | 'hydration' | 'window'
 
@@ -187,11 +187,11 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
   const updateSettings = useCallback((newSettings: Partial<Settings>) => {
     // Request notification permission when enabling notifications
     if (newSettings.notificationsEnabled && 'Notification' in window) {
-      Notification.requestPermission().then(permission => {
-        if (permission !== 'granted') {
-          console.log('Notification permission denied')
-        }
-      })
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          console.log('Notification permission:', permission)
+        })
+      }
     }
     setSettings(prev => ({ ...prev, ...newSettings }))
   }, [])
@@ -272,46 +272,43 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
 
   const triggerBreak = useCallback(() => {
     // Pick a random break type, avoiding the last one used
-    const availableBreaks = lastBreakType 
+    const availableBreaks = lastBreakType
       ? breakContents.filter(b => b.type !== lastBreakType)
       : breakContents
     const randomBreak = availableBreaks[Math.floor(Math.random() * availableBreaks.length)]
     setCurrentBreak(randomBreak)
     setLastBreakType(randomBreak.type)
     setScreen('break')
-    
-    playChime()
-    
-    // Show notification
-    if (settings.notificationsEnabled && 'Notification' in window) {
-      // Request permission if not yet granted
-      if (Notification.permission === 'default') {
-        Notification.requestPermission()
-      }
 
-      if (Notification.permission === 'granted') {
-        const notification = new Notification(`⏰ UNFOCUS — ${randomBreak.type.toUpperCase()}`, {
+    playChime()
+
+    // Show notification - works even when browser is in background
+    if (settings.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        const notification = new Notification(`UNFOCUS - ${randomBreak.type.toUpperCase()}`, {
           body: randomBreak.invitation,
-          icon: '/icon.svg',
-          badge: '/icon.svg',
-          silent: false,
+          icon: '/favicon.ico',
           tag: 'unfocus-break',
           requireInteraction: true,
+          silent: false,
         })
+
+        // Focus window and tab when notification is clicked
+        notification.onclick = function(event) {
+          event.preventDefault()
+          window.focus()
+          notification.close()
+        }
 
         // Auto-close notification after break duration
         setTimeout(() => {
           notification.close()
         }, randomBreak.duration * 1000)
-
-        // Focus window when notification is clicked
-        notification.onclick = () => {
-          window.focus()
-          notification.close()
-        }
+      } catch (e) {
+        console.error('Notification error:', e)
       }
     }
-  }, [settings.notificationsEnabled, playChime])
+  }, [settings.notificationsEnabled, playChime, lastBreakType])
 
   const completeBreak = useCallback(() => {
     setStats(prev => ({
