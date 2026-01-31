@@ -78,11 +78,15 @@ interface UnfocusContextType {
   startSession: () => void
   endSession: () => void
   triggerBreak: () => void
+  triggerSpecificBreak: (type: BreakType) => void
   completeBreak: () => void
   skipBreak: () => void
+  repeatBreak: () => void
   currentBreak: BreakContent | null
   playChime: () => void
 }
+
+export type { BreakType }
 
 const UnfocusContext = createContext<UnfocusContextType | null>(null)
 
@@ -259,6 +263,23 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
     setScreen('ambient')
   }, [])
 
+  const repeatBreak = useCallback(() => {
+    // Reset the current break timer by setting it again
+    if (currentBreak) {
+      setCurrentBreak({ ...currentBreak })
+    }
+  }, [currentBreak])
+
+  const triggerSpecificBreak = useCallback((type: BreakType) => {
+    const breakContent = breakContents.find(b => b.type === type)
+    if (breakContent) {
+      setCurrentBreak(breakContent)
+      setLastBreakType(type)
+      setScreen('break')
+      playChime()
+    }
+  }, [playChime])
+
   return (
     <UnfocusContext.Provider
       value={{
@@ -272,8 +293,10 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
         startSession,
         endSession,
         triggerBreak,
+        triggerSpecificBreak,
         completeBreak,
         skipBreak,
+        repeatBreak,
         currentBreak,
         playChime,
       }}

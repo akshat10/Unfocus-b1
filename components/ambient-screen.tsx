@@ -58,10 +58,10 @@ export function AmbientScreen() {
     }
   }, [timeLeft, formatTime])
 
-  // Debug: press 'd' to trigger break immediately
+  // Keyboard shortcuts: 'd' (debug) or 'b' to trigger break immediately
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'd' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if ((e.key === 'd' || e.key === 'b') && !e.metaKey && !e.ctrlKey && !e.altKey) {
         triggerBreak()
       }
     }
@@ -85,6 +85,15 @@ export function AmbientScreen() {
         <div className="mt-8">
           <span className="text-2xl animate-blink">▊</span>
         </div>
+        
+        {/* Take break now button */}
+        <button
+          onClick={triggerBreak}
+          className="mt-12 px-6 py-2 border text-sm hover:opacity-80 transition-opacity"
+          style={{ borderColor: theme.muted, color: theme.muted }}
+        >
+          [b] take a break now
+        </button>
       </div>
 
       {/* Bottom bar */}
