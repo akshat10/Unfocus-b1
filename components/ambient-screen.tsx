@@ -58,6 +58,17 @@ export function AmbientScreen() {
     }
   }, [timeLeft, formatTime])
 
+  // Debug: press 'd' to trigger break immediately
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'd' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        triggerBreak()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [triggerBreak])
+
   return (
     <div 
       className="min-h-screen flex flex-col"

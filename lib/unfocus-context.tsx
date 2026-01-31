@@ -102,6 +102,7 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
   })
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null)
   const [currentBreak, setCurrentBreak] = useState<BreakContent | null>(null)
+  const [lastBreakType, setLastBreakType] = useState<BreakType | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
 
   const theme = themes[settings.themeId] || themes.dracula
@@ -222,9 +223,13 @@ export function UnfocusProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const triggerBreak = useCallback(() => {
-    // Pick a random break type
-    const randomBreak = breakContents[Math.floor(Math.random() * breakContents.length)]
+    // Pick a random break type, avoiding the last one used
+    const availableBreaks = lastBreakType 
+      ? breakContents.filter(b => b.type !== lastBreakType)
+      : breakContents
+    const randomBreak = availableBreaks[Math.floor(Math.random() * availableBreaks.length)]
     setCurrentBreak(randomBreak)
+    setLastBreakType(randomBreak.type)
     setScreen('break')
     
     playChime()

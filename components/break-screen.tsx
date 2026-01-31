@@ -8,6 +8,18 @@ export function BreakScreen() {
   const [progress, setProgress] = useState(0)
   const [timeLeft, setTimeLeft] = useState(currentBreak?.duration || 20)
 
+  // Handle CTRL+C to skip
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'c' && e.ctrlKey) {
+        e.preventDefault()
+        skipBreak()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [skipBreak])
+
   useEffect(() => {
     if (!currentBreak) return
 
@@ -41,28 +53,40 @@ export function BreakScreen() {
       className="min-h-screen flex flex-col items-center justify-center p-4"
       style={{ backgroundColor: theme.bg, color: theme.text }}
     >
-      <div className="w-full max-w-md animate-fade-in">
-        {/* ASCII Box */}
-        <pre className="text-xs sm:text-sm leading-relaxed" style={{ color: theme.text }}>
-{`░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-░                                        ░
-░  `}<span style={{ color: theme.accent }}>{`> BREAK_TYPE: ${currentBreak.type}`}</span>{`               
-░                                        ░
-░  `}<span style={{ color: theme.muted }}>{currentBreak.noticing.substring(0, 36)}</span>{`
-░  `}<span style={{ color: theme.muted }}>{currentBreak.noticing.substring(36) || ''}</span>{`
-░                                        ░
-░  ──────────────────────────────────    ░
-░                                        ░
-░  `}<span style={{ color: theme.accent }}>{currentBreak.invitation.substring(0, 36)}</span>{`
-░  `}<span style={{ color: theme.accent }}>{currentBreak.invitation.substring(36) || ''}</span>{`
-░                                        ░
-░  [{progressBar}] {timeLeft}s    ░
-░                                        ░
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░`}
-        </pre>
+      <div className="w-full max-w-lg animate-fade-in">
+        {/* Break type header */}
+        <div className="mb-6 text-center">
+          <span style={{ color: theme.accent }} className="text-lg">
+            {'>'} BREAK_TYPE: {currentBreak.type.toUpperCase()}
+          </span>
+        </div>
+
+        {/* Content box */}
+        <div 
+          className="border p-6 mb-6"
+          style={{ borderColor: theme.muted }}
+        >
+          <p className="mb-4" style={{ color: theme.muted }}>
+            {currentBreak.noticing}
+          </p>
+          <div className="border-t my-4" style={{ borderColor: theme.muted }} />
+          <p style={{ color: theme.accent }}>
+            {currentBreak.invitation}
+          </p>
+        </div>
+
+        {/* Progress bar */}
+        <div className="text-center mb-8">
+          <div className="font-mono text-lg tracking-widest">
+            [{progressBar}]
+          </div>
+          <div className="mt-2" style={{ color: theme.muted }}>
+            {timeLeft}s remaining
+          </div>
+        </div>
 
         {/* Skip button */}
-        <div className="mt-8 text-center">
+        <div className="text-center">
           <button
             onClick={skipBreak}
             className="text-sm hover:opacity-80 transition-opacity"
