@@ -22,7 +22,7 @@ const PHASE_LABELS: Record<BreathPhase, string> = {
 }
 
 export function AmbientMode() {
-  const { endBreak, setAmbientMode, currentReflection, settings } = useBreak()
+  const { endBreak, setAmbientMode, currentReflection } = useBreak()
   const [phase, setPhase] = useState<BreathPhase>('inhale')
   const [phaseTime, setPhaseTime] = useState(BREATH_CYCLE.inhale)
   const [breakTime, setBreakTime] = useState(0)
@@ -198,23 +198,6 @@ export function AmbientMode() {
         </Button>
       </div>
 
-      {/* Floating animation keyframes */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translate(0, 0) rotate(0deg);
-          }
-          25% {
-            transform: translate(2%, 1%) rotate(0.5deg);
-          }
-          50% {
-            transform: translate(-1%, 2%) rotate(-0.5deg);
-          }
-          75% {
-            transform: translate(-2%, -1%) rotate(0.25deg);
-          }
-        }
-      `}</style>
     </div>
   )
 }
