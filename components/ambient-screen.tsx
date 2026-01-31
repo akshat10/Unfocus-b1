@@ -83,16 +83,15 @@ export function AmbientScreen() {
       <div className="flex-1 flex flex-col items-center justify-center animate-fade-in px-6 py-8">
         {/* UNFOCUS watermark */}
         <pre
-          className="text-[8px] sm:text-[10px] leading-none mb-12 opacity-30 font-mono"
-          style={{ color: theme.accent }}
-        >
-{`██╗   ██╗███╗   ██╗███████╗ ██████╗  ██████╗██╗   ██╗███████╗
-██║   ██║████╗  ██║██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
-██║   ██║██╔██╗ ██║█████╗  ██║   ██║██║     ██║   ██║███████╗
-██║   ██║██║╚██╗██║██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
-╚██████╔╝██║ ╚████║██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
- ╚═════╝ ╚═╝  ╚═══╝╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝`}
-        </pre>
+          className="text-[7px] sm:text-[9px] leading-tight mb-12 opacity-30"
+          style={{ color: theme.accent, fontFamily: 'JetBrains Mono, monospace' }}
+        >{`
+ _   _ _   _ _____ ___   ___ _   _ ___
+| | | | \\ | |  ___/ _ \\ / __| | | / __|
+| | | |  \\| | |_ | | | | |  | | | \\__ \\
+| |_| | |\\  |  _|| |_| | |__| |_| |__) |
+ \\___/|_| \\_|_|   \\___/ \\___|\\___/|___/
+        `.trim()}</pre>
 
         {/* Time display with terminal frame */}
         <div

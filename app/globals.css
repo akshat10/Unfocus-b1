@@ -46,14 +46,14 @@
   --sidebar-border: var(--terminal-muted);
   --sidebar-ring: var(--terminal-accent);
 
-  /* Font */
-  --active-font: var(--font-mono), 'JetBrains Mono', ui-monospace, monospace;
+  /* Font - force monospace everywhere */
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @theme inline {
-  --font-sans: var(--active-font);
-  --font-serif: var(--active-font);
-  --font-mono: var(--active-font);
+  --font-sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-serif: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -95,9 +95,14 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  pre, code {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 }
 

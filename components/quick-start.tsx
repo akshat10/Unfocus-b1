@@ -26,16 +26,15 @@ export function QuickStart() {
     >
       {/* ASCII Logo */}
       <pre
-        className="text-[8px] sm:text-[10px] leading-none mb-4 font-mono"
-        style={{ color: theme.accent }}
-      >
-{`██╗   ██╗███╗   ██╗███████╗ ██████╗  ██████╗██╗   ██╗███████╗
-██║   ██║████╗  ██║██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
-██║   ██║██╔██╗ ██║█████╗  ██║   ██║██║     ██║   ██║███████╗
-██║   ██║██║╚██╗██║██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
-╚██████╔╝██║ ╚████║██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
- ╚═════╝ ╚═╝  ╚═══╝╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝`}
-      </pre>
+        className="text-[7px] sm:text-[9px] leading-tight mb-4"
+        style={{ color: theme.accent, fontFamily: 'JetBrains Mono, monospace' }}
+      >{`
+ _   _ _   _ _____ ___   ___ _   _ ___
+| | | | \\ | |  ___/ _ \\ / __| | | / __|
+| | | |  \\| | |_ | | | | |  | | | \\__ \\
+| |_| | |\\  |  _|| |_| | |__| |_| |__) |
+ \\___/|_| \\_|_|   \\___/ \\___|\\___/|___/
+      `.trim()}</pre>
 
       <p className="text-sm mb-8 opacity-60" style={{ color: theme.muted }}>
         touch grass sometimes.
