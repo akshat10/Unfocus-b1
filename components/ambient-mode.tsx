@@ -3,7 +3,7 @@
 import { useBreak } from '@/lib/break-context'
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { X, Share2, Download } from 'lucide-react'
+import { X, Download } from 'lucide-react'
 
 type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'rest'
 
@@ -61,7 +61,7 @@ export function AmbientMode() {
 
   // Show reflection after some breathing
   useEffect(() => {
-    if (breakTime >= 20 && !showReflection) {
+    if (breakTime >= 8 && !showReflection) {
       setShowReflection(true)
     }
   }, [breakTime, showReflection])
