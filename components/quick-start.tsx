@@ -25,12 +25,16 @@ export function QuickStart() {
       style={{ color: theme.text, minHeight: '500px' }}
     >
       {/* ASCII Logo */}
-      <h1
-        className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-widest mb-4 font-mono"
+      <pre
+        className="text-[6px] xs:text-[8px] sm:text-[10px] md:text-[12px] leading-none mb-4 font-mono select-none"
         style={{ color: theme.accent }}
       >
-        UNFOCUS
-      </h1>
+{`█   █ █   █ █████ █████ █████ █   █ █████
+█   █ ██  █ █     █   █ █     █   █ █    
+█   █ █ █ █ ████  █   █ █     █   █ █████
+█   █ █  ██ █     █   █ █     █   █     █
+█████ █   █ █     █████ █████ █████ █████`}
+      </pre>
 
       <p className="text-sm mb-8 opacity-60" style={{ color: theme.muted }}>
         touch grass sometimes.

@@ -82,12 +82,16 @@ export function AmbientScreen() {
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center animate-fade-in px-6 py-8">
         {/* UNFOCUS watermark */}
-        <h1
-          className="text-3xl sm:text-4xl font-bold tracking-widest mb-12 opacity-30 font-mono"
+        <pre
+          className="text-[6px] xs:text-[8px] sm:text-[10px] leading-none mb-12 opacity-30 font-mono select-none"
           style={{ color: theme.accent }}
         >
-          UNFOCUS
-        </h1>
+{`█   █ █   █ █████ █████ █████ █   █ █████
+█   █ ██  █ █     █   █ █     █   █ █    
+█   █ █ █ █ ████  █   █ █     █   █ █████
+█   █ █  ██ █     █   █ █     █   █     █
+█████ █   █ █     █████ █████ █████ █████`}
+        </pre>
 
         {/* Time display with terminal frame */}
         <div
