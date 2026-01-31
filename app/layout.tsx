@@ -1,22 +1,17 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _serif = Cormorant_Garamond({ 
+const mono = JetBrains_Mono({ 
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-serif"
-});
-const _sans = Inter({ 
-  subsets: ["latin"],
-  variable: "--font-sans"
+  variable: "--font-mono"
 });
 
 export const metadata: Metadata = {
-  title: 'Stillpoint - Mindful Breaks',
-  description: 'Presence in the periphery. A gentle reminder to pause, breathe, and reset throughout your day.',
+  title: 'unfocus - terminal breaks',
+  description: 'the terminal is patient. you don\'t have to be.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -38,7 +33,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#f5f3ef',
+  themeColor: '#282a36',
   width: 'device-width',
   initialScale: 1,
 }
@@ -50,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${_serif.variable} ${_sans.variable} font-sans antialiased`}>
+      <body className={`${mono.variable} font-mono antialiased`}>
         {children}
         <Analytics />
       </body>
